@@ -1715,7 +1715,13 @@ namespace Microsoft.PowerShell.Commands
             _globalContextTracker.TrackEOF();
             if (!_doneProcessing)
             {
-                FlushTrackerQueue(_globalContextTracker);
+                bool emitted = FlushTrackerQueue(_globalContextTracker);
+
+                // In quiet mode, report that none of the input objects matched.
+                if (!emitted && Quiet && !List && _inputRecordNumber > 0)
+                {
+                    WriteObject(false);
+                }
             }
         }
 
